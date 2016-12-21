@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+    id="dff-cordova-plugin-carmen"
+    version="0.0.1">
+
+    <name>Common</name>
+    <description>Carmen Plugin</description>
+    <author>dff solutions</author>
+    <keywords>phonegap,cordova,carmen,dff</keywords>
+
+     <js-module src="www/carmen.js" name="carmen">
+        <clobbers target="Carmen" />
+    </js-module>
+
+    <!-- android -->
+    <platform name="android">
+        <config-file target="res/xml/config.xml" parent="/*">
+            <feature name="CarmenPlugin">
+                <param name="android-package" value="com.dff.cordova.plugin.carmen.CarmenPlugin"/>
+            </feature>
+        </config-file>
+
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/CarmenServiceHandler.java" target-dir="src/com/dff/cordova/plugin/carmen" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/action/StartService.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/action/CarmenAction.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/CarmenPlugin.java" target-dir="src/com/dff/cordova/plugin/carmen" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/service/CarmenServiceWorker.java" target-dir="src/com/dff/cordova/plugin/carmen/service" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/service/CarmenService.java" target-dir="src/com/dff/cordova/plugin/carmen/service" />
+
+     </platform>
+</plugin>
+
