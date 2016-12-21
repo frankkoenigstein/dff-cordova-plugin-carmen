@@ -25,7 +25,21 @@
             <service android:name="com.dff.cordova.plugin.carmen.service.CarmenService"
                      android:label="CarmenService"
             />
+
+            <receiver android:name="com.dff.cordova.plugin.carmen.broadcasts.BroadcastReceiverOnBootComplete"
+                    android:enabled="true"
+                    android:exported="false">
+                <intent-filter>
+                    <action android:name="android.intent.action.BOOT_COMPLETED" />
+                </intent-filter>
+                <intent-filter>
+                    <action android:name="android.intent.action.PACKAGE_REPLACED" />
+                    <action android:name="android.intent.action.PACKAGE_ADDED" />
+                    <data android:scheme="package" />
+                </intent-filter>
+            </receiver>
         </config-file>
+
 
         <source-file src="src/android/com/dff/cordova/plugin/carmen/CarmenServiceHandler.java" target-dir="src/com/dff/cordova/plugin/carmen" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/StartService.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
@@ -33,6 +47,7 @@
         <source-file src="src/android/com/dff/cordova/plugin/carmen/CarmenPlugin.java" target-dir="src/com/dff/cordova/plugin/carmen" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/service/CarmenServiceWorker.java" target-dir="src/com/dff/cordova/plugin/carmen/service" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/service/CarmenService.java" target-dir="src/com/dff/cordova/plugin/carmen/service" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/broadcasts/BroadcastReceiverOnBootComplete.java" target-dir="src/com/dff/cordova/plugin/carmen/broadcasts" />
 
      </platform>
 </plugin>
