@@ -21,6 +21,10 @@
             </feature>
         </config-file>
 
+        <config-file target="AndroidManifest.xml" parent="/manifest">
+            <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+        </config-file>
+
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
             <service android:name="com.dff.cordova.plugin.carmen.service.CarmenService"
                      android:label="CarmenService"
@@ -39,7 +43,6 @@
                 </intent-filter>
             </receiver>
         </config-file>
-
 
         <source-file src="src/android/com/dff/cordova/plugin/carmen/CarmenServiceHandler.java" target-dir="src/com/dff/cordova/plugin/carmen" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/StartService.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
