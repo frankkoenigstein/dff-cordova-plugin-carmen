@@ -2,8 +2,21 @@
 'use strict';
 
 var cordova = require('cordova');
-var feature = "CarmenPlugin";
-var actions = ["startService"];
+var feature = 'CarmenPlugin';
+var actions = [
+    "onServiceConnectionChange",
+    'onEvent',
+    "bindService",
+    "unbindService",
+    'startService',
+    'setBackgroundScanPeriod',
+    'setForegroundScanPeriod',
+    'setRegionExitExpiration',
+    'startMonitoring',
+    'stopMonitoring',
+    'startRanging',
+    'stopRanging'
+];
 
 function CarmenPlugin () {};
 

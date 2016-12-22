@@ -1,14 +1,11 @@
 package com.dff.cordova.plugin.carmen;
 
-import android.annotation.SuppressLint;
 import android.util.Log;
-import com.dff.cordova.plugin.carmen.action.CarmenAction;
-import com.dff.cordova.plugin.carmen.action.StartService;
+import com.dff.cordova.plugin.carmen.action.*;
 import com.dff.cordova.plugin.common.action.CordovaAction;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import com.dff.cordova.plugin.common.service.CommonServicePlugin;
 import org.apache.cordova.CallbackContext;
-import org.apache.cordova.CordovaArgs;
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -16,18 +13,22 @@ import org.json.JSONException;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 
-/**
- * Created by frank on 21.12.16.
- */
 public class CarmenPlugin extends CommonServicePlugin {
     private static final String TAG = "com.dff.cordova.plugin.carmen.CarmenPlugin";
-    protected HashMap<String, Class<? extends CarmenAction>> mActions = new HashMap<String, Class<? extends CarmenAction>>();
+    private HashMap<String, Class<? extends CarmenAction>> mActions = new HashMap<String, Class<? extends CarmenAction>>();
     private CarmenServiceHandler mCarmenServiceHandler;
 
     public CarmenPlugin() {
         super(TAG);
 
         mActions.put(StartService.ACTION_NAME, StartService.class);
+        mActions.put(StartMonitoring.ACTION_NAME, StartMonitoring.class);
+        mActions.put(StopMonitoring.ACTION_NAME, StopMonitoring.class);
+        mActions.put(StartRanging.ACTION_NAME, StartRanging.class);
+        mActions.put(StopRanging.ACTION_NAME, StopRanging.class);
+        mActions.put(SetBackgroundScanPeriod.ACTION_NAME, SetBackgroundScanPeriod.class);
+        mActions.put(SetForegroundScanPeriod.ACTION_NAME, SetForegroundScanPeriod.class);
+        mActions.put(SetRegionExitExpiration.ACTION_NAME, SetRegionExitExpiration.class);
     }
 
     @Override
@@ -36,7 +37,6 @@ public class CarmenPlugin extends CommonServicePlugin {
         super.pluginInitialize(mCarmenServiceHandler);
     }
 
-    @SuppressLint("LongLogTag")
     @Override
     public boolean execute(String action, JSONArray args, CallbackContext callbackContext) throws JSONException {
         Log.d(TAG, "call for action: " + action + "; args: " + args);
