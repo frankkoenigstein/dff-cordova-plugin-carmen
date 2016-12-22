@@ -133,7 +133,6 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
     @Override
     public void handleMessage(Message msg)
     {
-        super.handleMessage(msg);
         WHAT msgWhat = WHAT.values()[msg.what];
 
         CordovaPluginLog.d(TAG, "handle msg " + msg);
@@ -153,7 +152,7 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
                 mBeaconServiceConnected = false;
                 break;
             default:
-                CordovaPluginLog.w(TAG, "unhandled msg " + msg);
+                super.handleMessage(msg);
                 break;
         }
     }

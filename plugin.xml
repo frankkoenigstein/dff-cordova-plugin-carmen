@@ -65,6 +65,7 @@
         <source-file src="src/android/com/dff/cordova/plugin/carmen/service/ibeacon/estimote/EstimoteBeaconManager.java" target-dir="src/com/dff/cordova/plugin/carmen/service/ibeacon/estimote" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/broadcasts/CarmenServiceBroadcastReceiver.java" target-dir="src/com/dff/cordova/plugin/carmen/broadcasts" />
 
+
      </platform>
 </plugin>
 

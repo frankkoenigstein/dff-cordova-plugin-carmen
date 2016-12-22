@@ -43,7 +43,11 @@ public class CarmenPlugin extends CommonServicePlugin {
 
         CordovaAction cordovaAction = null;
 
-        if (mActions.containsKey(action)) {
+        if ("onEvent".equals(action)) {
+            mCarmenServiceHandler.setOnEventCallbackContext(callbackContext);
+            return true;
+        }
+        else if (mActions.containsKey(action)) {
             Class<? extends CarmenAction> actionClass = mActions.get(action);
 
             Log.d(TAG, "found action: " + actionClass.getName());

@@ -2,6 +2,7 @@ package com.dff.cordova.plugin.carmen.service;
 
 import android.content.Context;
 import android.os.*;
+import android.util.Log;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 
 import java.util.ArrayList;
@@ -47,7 +48,7 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
 
     protected Context mContext;
     protected boolean mBeaconServiceConnected = false;
-    private ArrayList<Messenger> clients = new ArrayList<Messenger>();
+    private ArrayList<Messenger> mClients = new ArrayList<Messenger>();
 
     public AbstractCarmenBeaconManager(Looper looper, Context context) {
         super(looper);
@@ -67,6 +68,12 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
     {
         WHAT msgWhat = WHAT.values()[msg.what];
         switch (msgWhat) {
+            case REGISTER_CLIENT:
+                mClients.add(msg.replyTo);
+                break;
+            case UNREGISTER_CLIENT:
+                mClients.remove(msg.replyTo);
+                break;
             case SET_FOREGROUND_SCANPERIOD: {
                 long scanPeriodMillis = msg.getData().getLong(ARG_SCANPERIODMILLIS);
                 long waitTimeMillis = msg.getData().getLong(ARG_WAITTIMEMILLIS);
@@ -110,20 +117,23 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
 
                 break;
             }
+            default:
+                Log.d(TAG, "unhandled msg " + msg);
+                break;
         }
     }
 
     protected void notifyClients(Message msg) {
-        for (int i = this.clients.size() - 1; i >= 0; i--) {
+        for (int i = this.mClients.size() - 1; i >= 0; i--) {
             try {
-                this.clients.get(i).send(Message.obtain(msg));
+                this.mClients.get(i).send(Message.obtain(msg));
             }
             catch (RemoteException e) {
                 CordovaPluginLog.e(TAG, e.getMessage(), e);
                 // The client is dead. Remove it from the list;
                 // we are going through the list from back to front
                 // so this is safe to do inside the loop.
-                this.clients.remove(i);
+                this.mClients.remove(i);
             }
         }
     }
