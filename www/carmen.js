@@ -23,6 +23,19 @@ var eventActions = [
 
 function CarmenPlugin () {};
 
+// event constants
+
+CarmenPlugin.prototype.event = {
+    SERVICE_READY: 0,
+    ENTERED_REGION: 1,
+    EXITED_REGION: 2,
+    BEACONS_DISCOVERED: 3,
+    SCAN_START: 4,
+    SCAN_STOP: 5,
+    ERROR: 6,
+    BEACON_ERROR: 7
+}
+
 function createActionFunction (action) {
     return function (args) {
         args = args || {};

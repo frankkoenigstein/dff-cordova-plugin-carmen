@@ -23,6 +23,13 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
     public EstimoteBeaconManager(Looper looper, Context context) {
         super(looper, context);
         mBeaconManager = new BeaconManager(mContext);
+        mBeaconManager.connect(new BeaconManager.ServiceReadyCallback() {
+            @Override
+            public void onServiceReady() {
+                Log.d(TAG, WHAT_EVENT.SERVICE_READY.name());
+                notifyClients(Message.obtain(null, WHAT_EVENT.SERVICE_READY.ordinal()));
+            }
+        });
 
         mBeaconManager.setErrorListener(new BeaconManager.ErrorListener() {
             @Override
@@ -40,13 +47,12 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
                         break;
                 }
 
-                Log.e(TAG, WHAT_EVENT.ERROR.name() + " " + errorId + ": " + errorName);
-                notifyClients(Message.obtain(null, WHAT_EVENT.ERROR.ordinal(), errorName));
+                Log.e(TAG, WHAT_EVENT.BEACON_ERROR.name() + " " + errorId + ": " + errorName);
+                notifyClients(Message.obtain(null, WHAT_EVENT.BEACON_ERROR.ordinal(), errorId, 0, errorName));
             }
         });
 
         mBeaconManager.setScanStatusListener(new BeaconManager.ScanStatusListener() {
-            @SuppressLint("LongLogTag")
             @Override
             public void onScanStart() {
                 Log.d(TAG, WHAT_EVENT.SCAN_START.name());
@@ -62,7 +68,6 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
         });
 
         mBeaconManager.setMonitoringListener(new BeaconManager.MonitoringListener() {
-            @SuppressLint("LongLogTag")
             @Override
             public void onEnteredRegion(Region region, List<Beacon> beacons) {
                 Log.d(TAG, WHAT_EVENT.ENTERED_REGION.name() + " " + region.getIdentifier());
@@ -72,7 +77,6 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
                 notifyClients(msg);
             }
 
-            @SuppressLint("LongLogTag")
             @Override
             public void onExitedRegion(Region region) {
                 Log.d(TAG, WHAT_EVENT.EXITED_REGION.name() + " " + region.getIdentifier());
@@ -97,22 +101,30 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
 
     @Override
     protected void startMonitoring(String identifier, UUID uuid, Integer major, Integer minor) {
-        mBeaconManager.startMonitoring(new Region(identifier, uuid, major, minor));
+        Region region = new Region(identifier, uuid, major, minor);
+        CordovaPluginLog.d(TAG, "start monitoring " + region);
+        mBeaconManager.startMonitoring(region);
     }
 
     @Override
     protected void stopMonitoring(String identifier, UUID uuid, Integer major, Integer minor) {
-        mBeaconManager.stopMonitoring(new Region(identifier, uuid, major, minor));
+        Region region = new Region(identifier, uuid, major, minor);
+        CordovaPluginLog.d(TAG, "stop monitoring " + region);
+        mBeaconManager.stopMonitoring(region);
     }
 
     @Override
     protected void startRanging(String identifier, UUID uuid, Integer major, Integer minor) {
-        mBeaconManager.startRanging(new Region(identifier, uuid, major, minor));
+        Region region = new Region(identifier, uuid, major, minor);
+        CordovaPluginLog.d(TAG, "start ranging " + region);
+        mBeaconManager.startRanging(region);
     }
 
     @Override
     protected void stopRanging(String identifier, UUID uuid, Integer major, Integer minor) {
-        mBeaconManager.stopRanging(new Region(identifier, uuid, major, minor));
+        Region region = new Region(identifier, uuid, major, minor);
+        CordovaPluginLog.d(TAG, "stop ranging " + region);
+        mBeaconManager.stopRanging(region);
     }
 
     @Override
@@ -135,7 +147,7 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
     {
         WHAT msgWhat = WHAT.values()[msg.what];
 
-        CordovaPluginLog.d(TAG, "handle msg " + msg);
+        // CordovaPluginLog.d(TAG, "handle msg " + msg.what + " " + msgWhat.name());
 
         switch (msgWhat) {
             case CONNECT:

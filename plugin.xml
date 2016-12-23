@@ -64,8 +64,13 @@
         <source-file src="src/android/com/dff/cordova/plugin/carmen/service/CarmenService.java" target-dir="src/com/dff/cordova/plugin/carmen/service" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/service/ibeacon/estimote/EstimoteBeaconManager.java" target-dir="src/com/dff/cordova/plugin/carmen/service/ibeacon/estimote" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/broadcasts/CarmenServiceBroadcastReceiver.java" target-dir="src/com/dff/cordova/plugin/carmen/broadcasts" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/model/JsonRegion.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/model/JsonBeacon.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/model/JsonBatteryLevel.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/model/JsonNearable.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/model/JsonNearableType.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/model/JsonBroadcastingPower.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
 
 
      </platform>
 </plugin>
-
