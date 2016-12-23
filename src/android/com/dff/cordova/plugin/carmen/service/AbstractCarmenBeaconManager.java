@@ -78,10 +78,21 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
             case START_RANGING:
             case STOP_RANGING: {
                 try {
+                    int majminDefault = -1;
                     UUID uuid = UUID.fromString(msg.getData().getString(ARG_UUID));
                     String identifier = msg.getData().getString(ARG_IDENTIFIER);
-                    Integer major = msg.getData().getInt(ARG_MAJOR);
-                    Integer minor = msg.getData().getInt(ARG_MINOR);
+                    int majorInt = msg.getData().getInt(ARG_MAJOR, majminDefault);
+                    int minorInt = msg.getData().getInt(ARG_MINOR, majminDefault);
+                    Integer major = null;
+                    Integer minor = null;
+
+                    if (majorInt > majminDefault) {
+                       major = new Integer(majorInt);
+                    }
+
+                    if (minorInt > majminDefault) {
+                        minor = new Integer(minorInt);
+                    }
 
                     switch (msgWhat) {
                         case START_MONITORING:
