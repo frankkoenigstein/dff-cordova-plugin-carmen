@@ -2,19 +2,20 @@ package com.dff.cordova.plugin.carmen.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.*;
+import android.os.HandlerThread;
+import android.os.IBinder;
+import android.os.Messenger;
 import android.os.Process;
 import android.util.Log;
 import com.dff.cordova.plugin.carmen.service.ibeacon.estimote.EstimoteBeaconManager;
 
-/**
- * Created by frank on 21.12.16.
- */
 public class CarmenService extends Service {
     private static final String TAG = "CarmenService";
+
     protected AbstractCarmenBeaconManager mCarmenServiceWorker;
     protected HandlerThread mHandlerThread;
     protected Messenger mServiceMessenger;
+
 
     @Override
     public void onCreate() {
@@ -49,6 +50,8 @@ public class CarmenService extends Service {
     @Override
     public void onDestroy() {
         super.onDestroy();
+
+        mCarmenServiceWorker.onDestroy();
     }
 
     @Override

@@ -2,9 +2,11 @@ package com.dff.cordova.plugin.carmen.service.ibeacon.estimote;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.os.*;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
 import com.dff.cordova.plugin.carmen.service.AbstractCarmenBeaconManager;
+import com.dff.cordova.plugin.carmen.service.classes.BeaconRegion;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
@@ -17,17 +19,19 @@ import java.util.UUID;
 
 public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
     private static final String TAG = "EstimoteBeaconManager";
-
     private BeaconManager mBeaconManager;
-
     public EstimoteBeaconManager(Looper looper, Context context) {
         super(looper, context);
+
         mBeaconManager = new BeaconManager(mContext);
         mBeaconManager.connect(new BeaconManager.ServiceReadyCallback() {
             @Override
             public void onServiceReady() {
-                Log.d(TAG, WHAT_EVENT.SERVICE_READY.name());
-                notifyClients(Message.obtain(null, WHAT_EVENT.SERVICE_READY.ordinal()));
+                EstimoteBeaconManager.super.onServiceReady();
+
+                for (BeaconRegion beaconRegion : mRegions.values()) {
+                    startMonitoring(beaconRegion.mIdentifier, UUID.fromString(beaconRegion.mUuid), beaconRegion.mMajor, beaconRegion.mMinor);
+                }
             }
         });
 
@@ -72,6 +76,11 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
             public void onEnteredRegion(Region region, List<Beacon> beacons) {
                 Log.d(TAG, WHAT_EVENT.ENTERED_REGION.name() + " " + region.getIdentifier());
 
+                BeaconRegion beaconRegion = mRegions.get(region.getIdentifier());
+                if (beaconRegion != null) {
+                    beaconRegion.mEntered = true;
+                }
+
                 Message msg = Message.obtain(null, WHAT_EVENT.ENTERED_REGION.ordinal(), region);
                 msg.getData().putParcelableArrayList(ARG_BEACONS, new ArrayList<Beacon>(beacons));
                 notifyClients(msg);
@@ -80,6 +89,11 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
             @Override
             public void onExitedRegion(Region region) {
                 Log.d(TAG, WHAT_EVENT.EXITED_REGION.name() + " " + region.getIdentifier());
+
+                BeaconRegion beaconRegion = mRegions.get(region.getIdentifier());
+                if (beaconRegion != null) {
+                    beaconRegion.mEntered = false;
+                }
 
                 Message msg = Message.obtain(null, WHAT_EVENT.EXITED_REGION.ordinal(), region);
                 notifyClients(msg);
@@ -162,6 +176,16 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
             case DISCONNECT:
                 mBeaconManager.disconnect();
                 mBeaconServiceConnected = false;
+                break;
+            case SET_REGIONS:
+                ArrayList<Region> regions = msg.getData().getParcelableArrayList(AbstractCarmenBeaconManager.ARG_REGIONS);
+                for (Region region : regions) {
+                    mRegions.put(region.getIdentifier(), new BeaconRegion(region));
+                    mBeaconManager.startMonitoring(region);
+                }
+
+                storeRegions();
+
                 break;
             default:
                 super.handleMessage(msg);

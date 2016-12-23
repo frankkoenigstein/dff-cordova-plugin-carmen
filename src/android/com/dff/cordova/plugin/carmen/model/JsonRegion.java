@@ -2,9 +2,12 @@ package com.dff.cordova.plugin.carmen.model;
 
 import com.dff.cordova.plugin.carmen.service.AbstractCarmenBeaconManager;
 import com.estimote.sdk.Region;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class JsonRegion {
@@ -17,6 +20,18 @@ public class JsonRegion {
         jsonThread.put(AbstractCarmenBeaconManager.ARG_UUID, region.getProximityUUID());
 
         return jsonThread;
+    }
+
+    public static ArrayList<Region> fromJson(JSONArray regions) throws JSONException {
+        ArrayList<Region> regionsList = new ArrayList<Region>();
+
+        if (regions != null) {
+            for (int i = 0; i < regions.length(); i++) {
+                regionsList.add(fromJson(regions.getJSONObject(i)));
+            }
+        }
+
+        return regionsList;
     }
 
     public static Region fromJson(JSONObject jsonRegion) throws JSONException {

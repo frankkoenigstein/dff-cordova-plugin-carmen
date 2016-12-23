@@ -29,6 +29,7 @@ public class CarmenPlugin extends CommonServicePlugin {
         mActions.put(SetBackgroundScanPeriod.ACTION_NAME, SetBackgroundScanPeriod.class);
         mActions.put(SetForegroundScanPeriod.ACTION_NAME, SetForegroundScanPeriod.class);
         mActions.put(SetRegionExitExpiration.ACTION_NAME, SetRegionExitExpiration.class);
+        mActions.put(SetRegions.ACTION_NAME, SetRegions.class);
     }
 
     @Override

@@ -13,7 +13,8 @@ var actions = [
     'startMonitoring',
     'stopMonitoring',
     'startRanging',
-    'stopRanging'
+    'stopRanging',
+    'setRegions'
 ];
 
 var eventActions = [

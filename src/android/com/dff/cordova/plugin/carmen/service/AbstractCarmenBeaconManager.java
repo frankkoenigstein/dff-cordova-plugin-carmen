@@ -3,9 +3,13 @@ package com.dff.cordova.plugin.carmen.service;
 import android.content.Context;
 import android.os.*;
 import android.util.Log;
+import com.dff.cordova.plugin.carmen.service.classes.BeaconRegion;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
+import com.estimote.sdk.Region;
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.UUID;
 
 public abstract class AbstractCarmenBeaconManager extends Handler {
@@ -17,16 +21,25 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
     public static final String ARG_WAITTIMEMILLIS = "waitTimeMillis";
     public static final String ARG_PERIOD = "period";
     public static final String ARG_REGION = "region";
+    public static final String ARG_REGIONS = "regions";
     public static final String ARG_BEACON = "beacon";
     public static final String ARG_BEACONS = "beacons";
 
     private static final String TAG = "AbstractCarmenBeaconManager";
+
+    private static final String REGIONS_FILENAME = "regions.ser";
+    protected HashMap<String, BeaconRegion> mRegions = new HashMap<String, BeaconRegion>();
+    protected File mRegionsFile;
     protected Context mContext;
     protected boolean mBeaconServiceConnected = false;
     private ArrayList<Messenger> mClients = new ArrayList<Messenger>();
+
     public AbstractCarmenBeaconManager(Looper looper, Context context) {
         super(looper);
         mContext = context;
+        mRegionsFile = new File(context.getFilesDir().getAbsolutePath(), REGIONS_FILENAME);
+
+        restoreRegions();
     }
 
     protected abstract void startMonitoring(String identifier, UUID uuid, Integer major, Integer minor);
@@ -87,11 +100,11 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
                     Integer minor = null;
 
                     if (majorInt > majminDefault) {
-                       major = new Integer(majorInt);
+                        major = majorInt;
                     }
 
                     if (minorInt > majminDefault) {
-                        minor = new Integer(minorInt);
+                        minor = minorInt;
                     }
 
                     switch (msgWhat) {
@@ -136,6 +149,41 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
         }
     }
 
+    protected void onServiceReady() {
+        Log.d(TAG, WHAT_EVENT.SERVICE_READY.name());
+        notifyClients(Message.obtain(null, WHAT_EVENT.SERVICE_READY.ordinal()));
+    }
+
+    public void onDestroy() {
+        Log.d(TAG, "onDestroy");
+        storeRegions();
+    }
+
+    protected void restoreRegions() {
+        if (mRegionsFile.canRead()) {
+            try {
+                ObjectInputStream in = new ObjectInputStream(new FileInputStream(mRegionsFile));
+                mRegions = (HashMap<String, BeaconRegion>) in.readObject();
+                in.close();
+            } catch (IOException e) {
+                CordovaPluginLog.e(TAG, e.getMessage(), e);
+            } catch (ClassNotFoundException e) {
+                CordovaPluginLog.e(TAG, e.getMessage(), e);
+            }
+        }
+    }
+
+    public void storeRegions() {
+        try {
+            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(mRegionsFile));
+            out.writeObject(mRegions);
+            out.flush();
+            out.close();
+        } catch (IOException e) {
+            CordovaPluginLog.e(TAG, e.getMessage(), e);
+        }
+    }
+
     public enum WHAT {
         CONNECT,
         DISCONNECT,
@@ -149,7 +197,8 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
         SET_BACKGROUND_SCANPERIOD,
         SET_REGION_EXIT_EXPIRATION,
         REGISTER_CLIENT,
-        UNREGISTER_CLIENT
+        UNREGISTER_CLIENT,
+        SET_REGIONS
     }
 
     public enum WHAT_EVENT {
