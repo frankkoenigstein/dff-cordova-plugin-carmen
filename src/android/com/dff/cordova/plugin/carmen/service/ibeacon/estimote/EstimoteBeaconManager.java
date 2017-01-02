@@ -4,6 +4,8 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Parcelable;
+import android.os.RemoteException;
 import android.util.Log;
 import com.dff.cordova.plugin.carmen.service.AbstractCarmenBeaconManager;
 import com.dff.cordova.plugin.carmen.service.classes.BeaconRegion;
@@ -78,7 +80,7 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
 
                 BeaconRegion beaconRegion = mRegions.get(region.getIdentifier());
                 if (beaconRegion != null) {
-                    beaconRegion.mEntered = true;
+                    beaconRegion.setEntered(true);
                 }
 
                 Message msg = Message.obtain(null, WHAT_EVENT.ENTERED_REGION.ordinal(), region);
@@ -92,7 +94,7 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
 
                 BeaconRegion beaconRegion = mRegions.get(region.getIdentifier());
                 if (beaconRegion != null) {
-                    beaconRegion.mEntered = false;
+                    beaconRegion.setEntered(false);
                 }
 
                 Message msg = Message.obtain(null, WHAT_EVENT.EXITED_REGION.ordinal(), region);
@@ -185,6 +187,17 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
                 }
 
                 storeRegions();
+
+                break;
+            case GET_REGIONS:
+                Message msgResult = Message.obtain(null, WHAT.RESULT.ordinal(), msg.what, 0);
+                msgResult.getData().putParcelableArrayList(AbstractCarmenBeaconManager.ARG_REGIONS, new ArrayList<Parcelable>(mRegions.values()));
+
+                try {
+                    msg.replyTo.send(msgResult);
+                } catch (RemoteException e) {
+                    CordovaPluginLog.e(TAG, e.getMessage(), e);
+                }
 
                 break;
             default:

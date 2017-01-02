@@ -171,6 +171,9 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
                 CordovaPluginLog.e(TAG, e.getMessage(), e);
             }
         }
+        else {
+            CordovaPluginLog.w(TAG , "cannot read " + mRegionsFile.getAbsolutePath());
+        }
     }
 
     public void storeRegions() {
@@ -198,7 +201,9 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
         SET_REGION_EXIT_EXPIRATION,
         REGISTER_CLIENT,
         UNREGISTER_CLIENT,
-        SET_REGIONS
+        SET_REGIONS,
+        GET_REGIONS,
+        RESULT
     }
 
     public enum WHAT_EVENT {

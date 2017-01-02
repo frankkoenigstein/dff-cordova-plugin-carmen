@@ -12,7 +12,7 @@ import com.dff.cordova.plugin.carmen.service.ibeacon.estimote.EstimoteBeaconMana
 public class CarmenService extends Service {
     private static final String TAG = "CarmenService";
 
-    protected AbstractCarmenBeaconManager mCarmenServiceWorker;
+    protected AbstractCarmenBeaconManager mCarmenBeaconManager;
     protected HandlerThread mHandlerThread;
     protected Messenger mServiceMessenger;
 
@@ -24,8 +24,8 @@ public class CarmenService extends Service {
 
         mHandlerThread = new HandlerThread(TAG, Process.THREAD_PRIORITY_BACKGROUND);
         mHandlerThread.start();
-        mCarmenServiceWorker = new EstimoteBeaconManager(mHandlerThread.getLooper(), getApplicationContext());
-        mServiceMessenger = new Messenger(mCarmenServiceWorker);
+        mCarmenBeaconManager = new EstimoteBeaconManager(mHandlerThread.getLooper(), getApplicationContext());
+        mServiceMessenger = new Messenger(mCarmenBeaconManager);
     }
 
     @Override
@@ -35,11 +35,11 @@ public class CarmenService extends Service {
         /*
         int counter = 0;
 
-        mCarmenServiceWorker.postDelayed(new Runnable() {
+        mCarmenBeaconManager.postDelayed(new Runnable() {
             @Override
             public void run() {
                 Log.d(TAG,"counter = " + counter++);
-                mCarmenServiceWorker.postDelayed(this,5000);
+                mCarmenBeaconManager.postDelayed(this,5000);
             }
         },5000);
         */
@@ -51,7 +51,7 @@ public class CarmenService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        mCarmenServiceWorker.onDestroy();
+        mCarmenBeaconManager.onDestroy();
     }
 
     @Override

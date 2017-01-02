@@ -22,6 +22,18 @@ public class JsonRegion {
         return jsonThread;
     }
 
+    public static JSONArray toJson(List<Region> regions) throws JSONException {
+        JSONArray jsonRegions = new JSONArray();
+
+        if (regions != null) {
+            for (Region region : regions) {
+                jsonRegions.put(toJson(region));
+            }
+        }
+
+        return jsonRegions;
+    }
+
     public static ArrayList<Region> fromJson(JSONArray regions) throws JSONException {
         ArrayList<Region> regionsList = new ArrayList<Region>();
 

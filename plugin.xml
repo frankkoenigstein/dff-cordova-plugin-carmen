@@ -54,6 +54,7 @@
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/StartMonitoring.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/StartRanging.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/CarmenAction.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/action/GetRegions.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/SetRegions.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/SetBackgroundScanPeriod.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/StopMonitoring.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
