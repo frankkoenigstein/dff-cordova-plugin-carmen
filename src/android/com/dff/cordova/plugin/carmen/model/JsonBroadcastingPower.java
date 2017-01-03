@@ -5,15 +5,15 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class JsonBroadcastingPower {
-	public static JSONObject toJson(BroadcastingPower broadcastingPower) throws JSONException {
-		JSONObject jsonBroadcastingPower = new JSONObject();
+    public static JSONObject toJson(BroadcastingPower broadcastingPower) throws JSONException {
+        JSONObject jsonBroadcastingPower = new JSONObject();
 
-		if (broadcastingPower != null) {
-			jsonBroadcastingPower.put("powerInDbm", broadcastingPower.powerInDbm);
-			jsonBroadcastingPower.put("ordinal", broadcastingPower.ordinal());
-			jsonBroadcastingPower.put("name", broadcastingPower.name());
-		}
+        if (broadcastingPower != null) {
+            jsonBroadcastingPower.put("powerInDbm", broadcastingPower.powerInDbm);
+            jsonBroadcastingPower.put("ordinal", broadcastingPower.ordinal());
+            jsonBroadcastingPower.put("name", broadcastingPower.name());
+        }
 
-		return jsonBroadcastingPower;
-	}
+        return jsonBroadcastingPower;
+    }
 }

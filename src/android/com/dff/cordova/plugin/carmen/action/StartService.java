@@ -8,9 +8,6 @@ import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONArray;
 
-/**
- * Created by frank on 21.12.16.
- */
 public class StartService extends CarmenAction {
     public static final String ACTION_NAME = "startService";
 

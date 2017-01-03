@@ -4,6 +4,8 @@ import android.os.Message;
 import android.util.Log;
 import com.dff.cordova.plugin.carmen.CarmenServiceHandler;
 import com.dff.cordova.plugin.carmen.service.AbstractCarmenBeaconManager;
+import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
+import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
@@ -15,8 +17,8 @@ public class SetForegroundScanPeriod extends CarmenAction {
     private static final String TAG = "com.dff.cordova.plugin.carmen.action.SetForegroundScanPeriod";
     public static final String ACTION_NAME = "setForegroundScanPeriod";
     private static final String[] JSON_ARGS = {
-            AbstractCarmenBeaconManager.ARG_SCANPERIODMILLIS,
-            AbstractCarmenBeaconManager.ARG_WAITTIMEMILLIS,
+            CarmenServiceWorker.ARG_SCANPERIODMILLIS,
+            CarmenServiceWorker.ARG_WAITTIMEMILLIS,
     };
 
     public SetForegroundScanPeriod(String action, JSONArray args, CallbackContext callbackContext, CordovaInterface cordova,
@@ -30,10 +32,10 @@ public class SetForegroundScanPeriod extends CarmenAction {
 
         try {
             JSONObject jsonArgs = super.checkJsonArgs(args, JSON_ARGS);
-            Message msg = Message.obtain(null, AbstractCarmenBeaconManager.WHAT.SET_FOREGROUND_SCANPERIOD.ordinal());
+            Message msg = Message.obtain(null, WHAT.SET_FOREGROUND_SCANPERIOD.ordinal());
 
-            msg.getData().putLong(AbstractCarmenBeaconManager.ARG_SCANPERIODMILLIS, jsonArgs.getLong(AbstractCarmenBeaconManager.ARG_SCANPERIODMILLIS));
-            msg.getData().putLong(AbstractCarmenBeaconManager.ARG_WAITTIMEMILLIS, jsonArgs.getLong(AbstractCarmenBeaconManager.ARG_WAITTIMEMILLIS));
+            msg.getData().putLong(CarmenServiceWorker.ARG_SCANPERIODMILLIS, jsonArgs.getLong(CarmenServiceWorker.ARG_SCANPERIODMILLIS));
+            msg.getData().putLong(CarmenServiceWorker.ARG_WAITTIMEMILLIS, jsonArgs.getLong(CarmenServiceWorker.ARG_WAITTIMEMILLIS));
 
             Log.d(TAG, msg.toString());
 

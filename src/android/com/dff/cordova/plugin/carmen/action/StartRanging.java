@@ -3,9 +3,9 @@ package com.dff.cordova.plugin.carmen.action;
 import android.os.Message;
 import android.util.Log;
 import com.dff.cordova.plugin.carmen.CarmenServiceHandler;
-import com.dff.cordova.plugin.carmen.service.AbstractCarmenBeaconManager;
+import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
+import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
-import com.estimote.sdk.BeaconManager;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONArray;
@@ -13,10 +13,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 public class StartRanging extends CarmenAction {
-    private static final String TAG = "com.dff.cordova.plugin.carmen.action.StartRanging";
     public static final String ACTION_NAME = "startRanging";
+    private static final String TAG = "com.dff.cordova.plugin.carmen.action.StartRanging";
     private static final String[] JSON_ARGS = {
-            AbstractCarmenBeaconManager.ARG_IDENTIFIER
+            CarmenServiceWorker.ARG_IDENTIFIER
     };
 
     public StartRanging(String action, JSONArray args, CallbackContext callbackContext, CordovaInterface cordova,
@@ -30,20 +30,20 @@ public class StartRanging extends CarmenAction {
 
         try {
             JSONObject jsonArgs = super.checkJsonArgs(args, JSON_ARGS);
-            Message msg = Message.obtain(null, AbstractCarmenBeaconManager.WHAT.START_RANGING.ordinal());
+            Message msg = Message.obtain(null, WHAT.START_RANGING.ordinal());
 
-            msg.getData().putString(AbstractCarmenBeaconManager.ARG_IDENTIFIER, jsonArgs.getString(AbstractCarmenBeaconManager.ARG_IDENTIFIER));
+            msg.getData().putString(CarmenServiceWorker.ARG_IDENTIFIER, jsonArgs.getString(CarmenServiceWorker.ARG_IDENTIFIER));
 
-            if (!jsonArgs.isNull(AbstractCarmenBeaconManager.ARG_UUID)) {
-                msg.getData().putString(AbstractCarmenBeaconManager.ARG_UUID, jsonArgs.getString(AbstractCarmenBeaconManager.ARG_UUID));
+            if (!jsonArgs.isNull(CarmenServiceWorker.ARG_UUID)) {
+                msg.getData().putString(CarmenServiceWorker.ARG_UUID, jsonArgs.getString(CarmenServiceWorker.ARG_UUID));
             }
 
-            if (!jsonArgs.isNull(AbstractCarmenBeaconManager.ARG_MAJOR)) {
-                msg.getData().putInt(AbstractCarmenBeaconManager.ARG_MAJOR, jsonArgs.getInt(AbstractCarmenBeaconManager.ARG_MAJOR));
+            if (!jsonArgs.isNull(CarmenServiceWorker.ARG_MAJOR)) {
+                msg.getData().putInt(CarmenServiceWorker.ARG_MAJOR, jsonArgs.getInt(CarmenServiceWorker.ARG_MAJOR));
             }
 
-            if (!jsonArgs.isNull(AbstractCarmenBeaconManager.ARG_MINOR)) {
-                msg.getData().putInt(AbstractCarmenBeaconManager.ARG_MINOR, jsonArgs.getInt(AbstractCarmenBeaconManager.ARG_MINOR));
+            if (!jsonArgs.isNull(CarmenServiceWorker.ARG_MINOR)) {
+                msg.getData().putInt(CarmenServiceWorker.ARG_MINOR, jsonArgs.getInt(CarmenServiceWorker.ARG_MINOR));
             }
 
             Log.d(TAG, msg.toString());

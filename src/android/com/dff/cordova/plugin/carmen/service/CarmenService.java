@@ -2,30 +2,34 @@ package com.dff.cordova.plugin.carmen.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.HandlerThread;
-import android.os.IBinder;
-import android.os.Messenger;
+import android.os.*;
 import android.os.Process;
 import android.util.Log;
-import com.dff.cordova.plugin.carmen.service.ibeacon.estimote.EstimoteBeaconManager;
+import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT;
+import com.dff.cordova.plugin.carmen.service.event.CarmenEventServiceWorker;
 
 public class CarmenService extends Service {
     private static final String TAG = "CarmenService";
 
-    protected AbstractCarmenBeaconManager mCarmenBeaconManager;
-    protected HandlerThread mHandlerThread;
-    protected Messenger mServiceMessenger;
-
+    private CarmenServiceWorker mCarmenServiceWorker;
+    private Messenger mServiceMessenger;
 
     @Override
     public void onCreate() {
         super.onCreate();
         Log.d(TAG, "onCreate");
 
-        mHandlerThread = new HandlerThread(TAG, Process.THREAD_PRIORITY_BACKGROUND);
-        mHandlerThread.start();
-        mCarmenBeaconManager = new EstimoteBeaconManager(mHandlerThread.getLooper(), getApplicationContext());
-        mServiceMessenger = new Messenger(mCarmenBeaconManager);
+        HandlerThread handlerThread = new HandlerThread(TAG, Process.THREAD_PRIORITY_BACKGROUND);
+        handlerThread.start();
+        mCarmenServiceWorker = new CarmenServiceWorker(handlerThread.getLooper(), getApplicationContext());
+        mServiceMessenger = new Messenger(mCarmenServiceWorker);
+
+        // event service
+        CarmenEventServiceWorker carmenEventServiceWorker = new CarmenEventServiceWorker(handlerThread.getLooper(), getApplicationContext());
+        // connect handler
+        Message eventClientMsg = Message.obtain(mCarmenServiceWorker, WHAT.REGISTER_CLIENT.ordinal());
+        eventClientMsg.replyTo = new Messenger(carmenEventServiceWorker);
+        eventClientMsg.sendToTarget();
     }
 
     @Override
@@ -51,7 +55,7 @@ public class CarmenService extends Service {
     public void onDestroy() {
         super.onDestroy();
 
-        mCarmenBeaconManager.onDestroy();
+        mCarmenServiceWorker.onDestroy();
     }
 
     @Override

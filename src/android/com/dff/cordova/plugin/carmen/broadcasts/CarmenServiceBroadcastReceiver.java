@@ -23,8 +23,7 @@ public class CarmenServiceBroadcastReceiver extends BroadcastReceiver {
         if (action.equalsIgnoreCase(Intent.ACTION_BOOT_COMPLETED) ||
                 action.equalsIgnoreCase(Intent.ACTION_PACKAGE_ADDED) ||
                 action.equalsIgnoreCase(Intent.ACTION_PACKAGE_REPLACED)) {
-            Intent serviceIntent = new Intent(context, CarmenService.class);
-            context.startService(serviceIntent);
+            context.startService(new Intent(context, CarmenService.class));
         }
     }
 }

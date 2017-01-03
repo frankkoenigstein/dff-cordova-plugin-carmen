@@ -1,6 +1,7 @@
 package com.dff.cordova.plugin.carmen.model;
 
 import com.dff.cordova.plugin.carmen.service.AbstractCarmenBeaconManager;
+import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.MacAddress;
 import org.json.JSONArray;
@@ -14,12 +15,12 @@ public class JsonBeacon {
     public static JSONObject toJson(Beacon beacon) throws JSONException {
         JSONObject jsonBeacon = new JSONObject();
 
-        jsonBeacon.put(AbstractCarmenBeaconManager.ARG_MAJOR, beacon.getMajor());
+        jsonBeacon.put(CarmenServiceWorker.ARG_MAJOR, beacon.getMajor());
         jsonBeacon.put("measuredPower", beacon.getMeasuredPower());
-        jsonBeacon.put(AbstractCarmenBeaconManager.ARG_MINOR, beacon.getMinor());
+        jsonBeacon.put(CarmenServiceWorker.ARG_MINOR, beacon.getMinor());
         jsonBeacon.put("rssi", beacon.getRssi());
         jsonBeacon.put("macAddress", beacon.getMacAddress());
-        jsonBeacon.put(AbstractCarmenBeaconManager.ARG_UUID, beacon.getProximityUUID());
+        jsonBeacon.put(CarmenServiceWorker.ARG_UUID, beacon.getProximityUUID());
 
         return jsonBeacon;
     }
@@ -44,8 +45,8 @@ public class JsonBeacon {
         MacAddress macAddress = null;
         UUID uuid = null;
 
-        if (!jsonBeacon.isNull(AbstractCarmenBeaconManager.ARG_MAJOR)) {
-            major = jsonBeacon.getInt(AbstractCarmenBeaconManager.ARG_MAJOR);
+        if (!jsonBeacon.isNull(CarmenServiceWorker.ARG_MAJOR)) {
+            major = jsonBeacon.getInt(CarmenServiceWorker.ARG_MAJOR);
         }
 
 
@@ -54,8 +55,8 @@ public class JsonBeacon {
         }
 
 
-        if (!jsonBeacon.isNull(AbstractCarmenBeaconManager.ARG_MINOR)) {
-            minor = jsonBeacon.getInt(AbstractCarmenBeaconManager.ARG_MINOR);
+        if (!jsonBeacon.isNull(CarmenServiceWorker.ARG_MINOR)) {
+            minor = jsonBeacon.getInt(CarmenServiceWorker.ARG_MINOR);
         }
 
 
@@ -69,8 +70,8 @@ public class JsonBeacon {
         }
 
 
-        if (!jsonBeacon.isNull(AbstractCarmenBeaconManager.ARG_UUID)) {
-            uuid = UUID.fromString(jsonBeacon.getString(AbstractCarmenBeaconManager.ARG_UUID));
+        if (!jsonBeacon.isNull(CarmenServiceWorker.ARG_UUID)) {
+            uuid = UUID.fromString(jsonBeacon.getString(CarmenServiceWorker.ARG_UUID));
         }
 
         return new Beacon(uuid, macAddress, major, minor, measuredPower, rssi);

@@ -4,8 +4,10 @@ import android.content.ComponentName;
 import android.os.*;
 import com.dff.cordova.plugin.carmen.model.JsonBeacon;
 import com.dff.cordova.plugin.carmen.model.JsonRegion;
-import com.dff.cordova.plugin.carmen.service.AbstractCarmenBeaconManager;
 import com.dff.cordova.plugin.carmen.service.CarmenService;
+import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
+import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT;
+import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT_EVENT;
 import com.dff.cordova.plugin.common.AbstractPluginListener;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import com.dff.cordova.plugin.common.service.ServiceHandler;
@@ -19,14 +21,14 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 public class CarmenServiceHandler extends ServiceHandler {
-    private static final String TAG = "CarmenServiceHandler";
+    private static final String TAG = "CarmenServiceWorker";
     private CallbackContext mOnEventCallbackContext;
     private Messenger serviceClientMessenger = new Messenger(new Handler() {
         @Override
         public void handleMessage(Message msg) {
             ArrayList<Beacon> beacons = null;
             JSONObject jsonMsg = new JSONObject();
-            AbstractCarmenBeaconManager.WHAT_EVENT msgWHat = AbstractCarmenBeaconManager.WHAT_EVENT.values()[msg.what];
+            WHAT_EVENT msgWHat = WHAT_EVENT.values()[msg.what];
 
             try {
                 jsonMsg.put("what", msg.what);
@@ -41,16 +43,16 @@ public class CarmenServiceHandler extends ServiceHandler {
                         break;
                     case BEACONS_DISCOVERED:
                     case ENTERED_REGION:
-                        beacons = msg.getData().getParcelableArrayList(AbstractCarmenBeaconManager.ARG_BEACONS);
+                        beacons = msg.getData().getParcelableArrayList(CarmenServiceWorker.ARG_BEACONS);
                     case EXITED_REGION:
                         Region region = (Region) msg.obj;
                         JSONObject jsonRegion = JsonRegion.toJson(region);
 
                         if (beacons != null) {
-                            jsonRegion.put(AbstractCarmenBeaconManager.ARG_BEACONS, JsonBeacon.toJson(beacons));
+                            jsonRegion.put(CarmenServiceWorker.ARG_BEACONS, JsonBeacon.toJson(beacons));
                         }
 
-                        jsonMsg.put(AbstractCarmenBeaconManager.ARG_REGION, jsonRegion);
+                        jsonMsg.put(CarmenServiceWorker.ARG_REGION, jsonRegion);
                         break;
                     case SCAN_START:
                     case SCAN_STOP:
@@ -76,7 +78,7 @@ public class CarmenServiceHandler extends ServiceHandler {
     @Override
     public void onServiceConnected(ComponentName name, IBinder service) {
         super.onServiceConnected(name, service);
-        Message msg = Message.obtain(null, AbstractCarmenBeaconManager.WHAT.REGISTER_CLIENT.ordinal());
+        Message msg = Message.obtain(null, WHAT.REGISTER_CLIENT.ordinal());
         msg.replyTo = serviceClientMessenger;
         try {
             getService().send(msg);

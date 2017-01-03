@@ -5,7 +5,6 @@ import android.os.*;
 import android.util.Log;
 import com.dff.cordova.plugin.carmen.service.classes.BeaconRegion;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
-import com.estimote.sdk.Region;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -13,18 +12,6 @@ import java.util.HashMap;
 import java.util.UUID;
 
 public abstract class AbstractCarmenBeaconManager extends Handler {
-    public static final String ARG_UUID = "uuid";
-    public static final String ARG_IDENTIFIER = "identifier";
-    public static final String ARG_MAJOR = "major";
-    public static final String ARG_MINOR = "minor";
-    public static final String ARG_SCANPERIODMILLIS = "scanPeriodMillis";
-    public static final String ARG_WAITTIMEMILLIS = "waitTimeMillis";
-    public static final String ARG_PERIOD = "period";
-    public static final String ARG_REGION = "region";
-    public static final String ARG_REGIONS = "regions";
-    public static final String ARG_BEACON = "beacon";
-    public static final String ARG_BEACONS = "beacons";
-
     private static final String TAG = "AbstractCarmenBeaconManager";
 
     private static final String REGIONS_FILENAME = "regions.ser";
@@ -58,7 +45,7 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
 
     @Override
     public void handleMessage(Message msg) {
-        WHAT msgWhat = WHAT.values()[msg.what];
+        CarmenServiceWorker.WHAT msgWhat = CarmenServiceWorker.WHAT.values()[msg.what];
 
         // CordovaPluginLog.d(TAG, "handle msg " + msg.what + " " + msgWhat.name());
 
@@ -70,20 +57,20 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
                 mClients.remove(msg.replyTo);
                 break;
             case SET_FOREGROUND_SCANPERIOD: {
-                long scanPeriodMillis = msg.getData().getLong(ARG_SCANPERIODMILLIS);
-                long waitTimeMillis = msg.getData().getLong(ARG_WAITTIMEMILLIS);
+                long scanPeriodMillis = msg.getData().getLong(CarmenServiceWorker.ARG_SCANPERIODMILLIS);
+                long waitTimeMillis = msg.getData().getLong(CarmenServiceWorker.ARG_WAITTIMEMILLIS);
                 setForegroundScanPeriod(scanPeriodMillis, waitTimeMillis);
 
                 break;
             }
             case SET_BACKGROUND_SCANPERIOD: {
-                long scanPeriodMillis = msg.getData().getLong(ARG_SCANPERIODMILLIS);
-                long waitTimeMillis = msg.getData().getLong(ARG_WAITTIMEMILLIS);
+                long scanPeriodMillis = msg.getData().getLong(CarmenServiceWorker.ARG_SCANPERIODMILLIS);
+                long waitTimeMillis = msg.getData().getLong(CarmenServiceWorker.ARG_WAITTIMEMILLIS);
                 setBackgroundScanPeriod(scanPeriodMillis, waitTimeMillis);
                 break;
             }
             case SET_REGION_EXIT_EXPIRATION: {
-                long period = msg.getData().getLong(ARG_PERIOD);
+                long period = msg.getData().getLong(CarmenServiceWorker.ARG_PERIOD);
                 setRegionExitExpiration(period);
             }
             case START_MONITORING:
@@ -92,10 +79,10 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
             case STOP_RANGING: {
                 try {
                     int majminDefault = -1;
-                    UUID uuid = UUID.fromString(msg.getData().getString(ARG_UUID));
-                    String identifier = msg.getData().getString(ARG_IDENTIFIER);
-                    int majorInt = msg.getData().getInt(ARG_MAJOR, majminDefault);
-                    int minorInt = msg.getData().getInt(ARG_MINOR, majminDefault);
+                    UUID uuid = UUID.fromString(msg.getData().getString(CarmenServiceWorker.ARG_UUID));
+                    String identifier = msg.getData().getString(CarmenServiceWorker.ARG_IDENTIFIER);
+                    int majorInt = msg.getData().getInt(CarmenServiceWorker.ARG_MAJOR, majminDefault);
+                    int minorInt = msg.getData().getInt(CarmenServiceWorker.ARG_MINOR, majminDefault);
                     Integer major = null;
                     Integer minor = null;
 
@@ -123,7 +110,7 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
                     }
                 } catch (IllegalArgumentException e) {
                     CordovaPluginLog.e(TAG, e.getMessage(), e);
-                    Message errMsg = Message.obtain(null, WHAT_EVENT.ERROR.ordinal(), e.getMessage());
+                    Message errMsg = Message.obtain(null, CarmenServiceWorker.WHAT_EVENT.ERROR.ordinal(), e.getMessage());
                     notifyClients(errMsg);
                 }
 
@@ -150,8 +137,8 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
     }
 
     protected void onServiceReady() {
-        Log.d(TAG, WHAT_EVENT.SERVICE_READY.name());
-        notifyClients(Message.obtain(null, WHAT_EVENT.SERVICE_READY.ordinal()));
+        Log.d(TAG, CarmenServiceWorker.WHAT_EVENT.SERVICE_READY.name());
+        notifyClients(Message.obtain(null, CarmenServiceWorker.WHAT_EVENT.SERVICE_READY.ordinal()));
     }
 
     public void onDestroy() {
@@ -165,14 +152,17 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
                 ObjectInputStream in = new ObjectInputStream(new FileInputStream(mRegionsFile));
                 mRegions = (HashMap<String, BeaconRegion>) in.readObject();
                 in.close();
+
+                for (BeaconRegion br : mRegions.values()) {
+                    br.setEntered(false);
+                }
             } catch (IOException e) {
                 CordovaPluginLog.e(TAG, e.getMessage(), e);
             } catch (ClassNotFoundException e) {
                 CordovaPluginLog.e(TAG, e.getMessage(), e);
             }
-        }
-        else {
-            CordovaPluginLog.w(TAG , "cannot read " + mRegionsFile.getAbsolutePath());
+        } else {
+            CordovaPluginLog.w(TAG, "cannot read " + mRegionsFile.getAbsolutePath());
         }
     }
 
@@ -185,35 +175,5 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
         } catch (IOException e) {
             CordovaPluginLog.e(TAG, e.getMessage(), e);
         }
-    }
-
-    public enum WHAT {
-        CONNECT,
-        DISCONNECT,
-        START,
-        STOP,
-        START_MONITORING,
-        STOP_MONITORING,
-        START_RANGING,
-        STOP_RANGING,
-        SET_FOREGROUND_SCANPERIOD,
-        SET_BACKGROUND_SCANPERIOD,
-        SET_REGION_EXIT_EXPIRATION,
-        REGISTER_CLIENT,
-        UNREGISTER_CLIENT,
-        SET_REGIONS,
-        GET_REGIONS,
-        RESULT
-    }
-
-    public enum WHAT_EVENT {
-        SERVICE_READY,
-        ENTERED_REGION,
-        EXITED_REGION,
-        BEACONS_DISCOVERED,
-        SCAN_START,
-        SCAN_STOP,
-        ERROR,
-        BEACON_ERROR
     }
 }

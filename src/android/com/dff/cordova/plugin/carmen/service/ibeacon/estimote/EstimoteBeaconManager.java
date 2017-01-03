@@ -1,6 +1,5 @@
 package com.dff.cordova.plugin.carmen.service.ibeacon.estimote;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Looper;
 import android.os.Message;
@@ -8,6 +7,9 @@ import android.os.Parcelable;
 import android.os.RemoteException;
 import android.util.Log;
 import com.dff.cordova.plugin.carmen.service.AbstractCarmenBeaconManager;
+import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
+import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT;
+import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT_EVENT;
 import com.dff.cordova.plugin.carmen.service.classes.BeaconRegion;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import com.estimote.sdk.Beacon;
@@ -84,7 +86,7 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
                 }
 
                 Message msg = Message.obtain(null, WHAT_EVENT.ENTERED_REGION.ordinal(), region);
-                msg.getData().putParcelableArrayList(ARG_BEACONS, new ArrayList<Beacon>(beacons));
+                msg.getData().putParcelableArrayList(CarmenServiceWorker.ARG_BEACONS, new ArrayList<Beacon>(beacons));
                 notifyClients(msg);
             }
 
@@ -103,13 +105,12 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
         });
 
         mBeaconManager.setRangingListener(new BeaconManager.RangingListener() {
-            @SuppressLint("LongLogTag")
             @Override
             public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
                 Log.d(TAG, WHAT_EVENT.BEACONS_DISCOVERED.name() + " " + region.getIdentifier());
 
                 Message msg = Message.obtain(null, WHAT_EVENT.BEACONS_DISCOVERED.ordinal(), region);
-                msg.getData().putParcelableArrayList(ARG_BEACONS, new ArrayList<Beacon>(beacons));
+                msg.getData().putParcelableArrayList(CarmenServiceWorker.ARG_BEACONS, new ArrayList<Beacon>(beacons));
                 notifyClients(msg);
             }
         });
@@ -163,8 +164,6 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
     {
         WHAT msgWhat = WHAT.values()[msg.what];
 
-        // CordovaPluginLog.d(TAG, "handle msg " + msg.what + " " + msgWhat.name());
-
         switch (msgWhat) {
             case CONNECT:
                 mBeaconManager.connect(new BeaconManager.ServiceReadyCallback() {
@@ -180,7 +179,7 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
                 mBeaconServiceConnected = false;
                 break;
             case SET_REGIONS:
-                ArrayList<Region> regions = msg.getData().getParcelableArrayList(AbstractCarmenBeaconManager.ARG_REGIONS);
+                ArrayList<Region> regions = msg.getData().getParcelableArrayList(CarmenServiceWorker.ARG_REGIONS);
                 for (Region region : regions) {
                     mRegions.put(region.getIdentifier(), new BeaconRegion(region));
                     mBeaconManager.startMonitoring(region);
@@ -191,7 +190,7 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
                 break;
             case GET_REGIONS:
                 Message msgResult = Message.obtain(null, WHAT.RESULT.ordinal(), msg.what, 0);
-                msgResult.getData().putParcelableArrayList(AbstractCarmenBeaconManager.ARG_REGIONS, new ArrayList<Parcelable>(mRegions.values()));
+                msgResult.getData().putParcelableArrayList(CarmenServiceWorker.ARG_REGIONS, new ArrayList<Parcelable>(mRegions.values()));
 
                 try {
                     msg.replyTo.send(msgResult);
