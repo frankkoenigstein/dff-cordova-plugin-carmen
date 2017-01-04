@@ -3,8 +3,10 @@ package com.dff.cordova.plugin.carmen.service;
 import android.content.Context;
 import android.os.*;
 import android.os.Process;
+import android.util.Log;
 import com.dff.cordova.plugin.carmen.model.BeaconRegion;
 import com.dff.cordova.plugin.carmen.service.event.CarmenEventServiceWorker;
+import com.dff.cordova.plugin.carmen.service.helpers.PreferencesHelper;
 import com.dff.cordova.plugin.carmen.service.ibeacon.estimote.EstimoteBeaconManager;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 
@@ -34,11 +36,14 @@ public class CarmenServiceWorker extends Handler {
     private Context mContext;
     private AbstractCarmenBeaconManager mCarmenBeaconManager;
     private CarmenEventServiceWorker mCarmenEventServiceWorker;
-    private HandlerThread mHandlerThread;
+    private HandlerThread mBeaconManagerHandlerThread;
     private ArrayList<Messenger> mClients = new ArrayList<Messenger>();
     private HashMap<String, BeaconRegion> mRegions = new HashMap<String, BeaconRegion>();
     private File mRegionsFile;
-
+    private String mUserId;
+    private String mJwt;
+    private String mServerUrl;
+    private PreferencesHelper mPreferencesHelper;
     public CarmenServiceWorker(Looper looper, Context context) {
         super(looper);
         mContext = context;
@@ -46,13 +51,23 @@ public class CarmenServiceWorker extends Handler {
         mRegionsFile = new File(context.getFilesDir().getAbsolutePath(), REGIONS_FILENAME);
         restoreRegions();
 
-        mHandlerThread = new HandlerThread(TAG, Process.THREAD_PRIORITY_BACKGROUND);
-        mHandlerThread.start();
+        // load preferences
+        mPreferencesHelper = new PreferencesHelper(CarmenService.SHARED_PREFERENCE_NAME, context);
+        mUserId = mPreferencesHelper.getString(CarmenServiceWorker.ARG_USER_ID, null);
+        mJwt = mPreferencesHelper.getString(CarmenServiceWorker.ARG_JWT, null);
+        mServerUrl = mPreferencesHelper.getString(CarmenServiceWorker.ARG_SERVER_URL, null);
 
-        mCarmenBeaconManager = new EstimoteBeaconManager(mHandlerThread.getLooper(), mContext, this);
-        mCarmenEventServiceWorker = new CarmenEventServiceWorker(looper, mContext);
+        mBeaconManagerHandlerThread = new HandlerThread(TAG, Process.THREAD_PRIORITY_BACKGROUND);
+        mBeaconManagerHandlerThread.start();
+
+        mCarmenBeaconManager = new EstimoteBeaconManager(mBeaconManagerHandlerThread.getLooper(), mContext, this);
+        mCarmenEventServiceWorker = new CarmenEventServiceWorker(looper, mContext, this);
         // connect handler
         mClients.add(new Messenger(mCarmenEventServiceWorker.getClientHandler()));
+    }
+
+    public String getUserId() {
+        return mUserId;
     }
 
     public HashMap<String, BeaconRegion> getRegions() {
@@ -74,6 +89,26 @@ public class CarmenServiceWorker extends Handler {
                 break;
             case UNREGISTER_CLIENT:
                 mClients.remove(msg.replyTo);
+                break;
+            case SET_OPTIONS:
+                if (msg.getData().containsKey(CarmenServiceWorker.ARG_USER_ID)) {
+                    mUserId = msg.getData().getString(CarmenServiceWorker.ARG_USER_ID);
+                    mPreferencesHelper.putString(CarmenServiceWorker.ARG_USER_ID, mUserId);
+                    Log.d(TAG, "set option " + ARG_USER_ID + " to " + mUserId);
+                }
+
+                if (msg.getData().containsKey(CarmenServiceWorker.ARG_JWT)) {
+                    mJwt = msg.getData().getString(CarmenServiceWorker.ARG_JWT);
+                    mPreferencesHelper.putString(CarmenServiceWorker.ARG_JWT, mJwt);
+                    Log.d(TAG, "set option " + ARG_JWT + " to " + mJwt);
+                }
+
+                if (msg.getData().containsKey(CarmenServiceWorker.ARG_SERVER_URL)) {
+                    mServerUrl = msg.getData().getString(CarmenServiceWorker.ARG_SERVER_URL);
+                    mPreferencesHelper.putString(CarmenServiceWorker.ARG_SERVER_URL, mServerUrl);
+                    Log.d(TAG, "set option " + ARG_SERVER_URL + " to " + mServerUrl);
+                }
+
                 break;
             case CLEAR_REGIONS:
                 clearRegions();

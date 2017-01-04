@@ -12,11 +12,9 @@ import android.os.Message;
 import android.util.Log;
 import com.dff.cordova.plugin.carmen.model.BeaconRegion;
 import com.dff.cordova.plugin.carmen.model.Event;
-import com.dff.cordova.plugin.carmen.service.CarmenService;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT_EVENT;
-import com.dff.cordova.plugin.carmen.service.helpers.PreferencesHelper;
 
 import java.util.ArrayList;
 
@@ -24,16 +22,15 @@ public class CarmenEventServiceWorker extends Handler {
     private static final String TAG = "com.dff.cordova.plugin.carmen.service.CarmenEventServiceWorker";
     private int mCurrentNotificationID = 0;
     private Context mContext;
+    private CarmenServiceWorker mCarmenServiceWorker;
     private ArrayList<Event> mEvents = new ArrayList<Event>();
-    private String mUserId;
-    private PreferencesHelper mPreferencesHelper;
 
     private Handler mClientHandler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             WHAT_EVENT msgWhat = WHAT_EVENT.values()[msg.what];
 
-            Event event = new Event(msg.what, msgWhat.name(), mUserId, null, System.currentTimeMillis());
+            Event event = new Event(msg.what, msgWhat.name(), mCarmenServiceWorker.getUserId(), null, System.currentTimeMillis());
             mEvents.add(event);
 
             switch (msgWhat) {
@@ -43,7 +40,7 @@ public class CarmenEventServiceWorker extends Handler {
 
                     event.setRegionId(region.getObjectId());
                     String title = msgWhat.name() + " " + region.getIdentifier();
-                    String text = region.getUuid() + " " + region.getMajor() + " " + region.getMinor();
+                    String text = region.getUuid() + ":" + region.getMajor() + ":" + region.getMinor();
 
                     // Toast.makeText(mContext, title, Toast.LENGTH_SHORT).show();
 
@@ -62,11 +59,10 @@ public class CarmenEventServiceWorker extends Handler {
         }
     };
 
-    public CarmenEventServiceWorker(Looper looper, Context context) {
+    public CarmenEventServiceWorker(Looper looper, Context context, CarmenServiceWorker carmenServiceWorker) {
         super(looper);
         mContext = context;
-        mPreferencesHelper = new PreferencesHelper(CarmenService.SHARED_PREFERENCE_NAME, context);
-        mUserId = mPreferencesHelper.getString(CarmenServiceWorker.ARG_USER_ID, null);
+        mCarmenServiceWorker = carmenServiceWorker;
     }
 
     public Handler getClientHandler() {
@@ -78,10 +74,6 @@ public class CarmenEventServiceWorker extends Handler {
         WHAT msgWhat = WHAT.values()[msg.what];
 
         switch (msgWhat) {
-            case SET_OPTIONS:
-                mUserId = msg.getData().getString(CarmenServiceWorker.ARG_USER_ID);
-                mPreferencesHelper.putString(CarmenServiceWorker.ARG_USER_ID, mUserId);
-                break;
             default:
                 break;
         }
