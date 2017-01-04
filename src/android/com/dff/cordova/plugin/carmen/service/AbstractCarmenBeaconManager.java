@@ -3,30 +3,19 @@ package com.dff.cordova.plugin.carmen.service;
 import android.content.Context;
 import android.os.*;
 import android.util.Log;
-import com.dff.cordova.plugin.carmen.service.classes.BeaconRegion;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
-
-import java.io.*;
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
 
 public abstract class AbstractCarmenBeaconManager extends Handler {
     private static final String TAG = "AbstractCarmenBeaconManager";
 
-    private static final String REGIONS_FILENAME = "regions.ser";
-    protected HashMap<String, BeaconRegion> mRegions = new HashMap<String, BeaconRegion>();
-    protected File mRegionsFile;
     protected Context mContext;
     protected boolean mBeaconServiceConnected = false;
-    private ArrayList<Messenger> mClients = new ArrayList<Messenger>();
-
-    public AbstractCarmenBeaconManager(Looper looper, Context context) {
+    protected CarmenServiceWorker mCarmenServiceWorker;
+    public AbstractCarmenBeaconManager(Looper looper, Context context, CarmenServiceWorker carmenServiceWorker) {
         super(looper);
         mContext = context;
-        mRegionsFile = new File(context.getFilesDir().getAbsolutePath(), REGIONS_FILENAME);
-
-        restoreRegions();
+        mCarmenServiceWorker = carmenServiceWorker;
     }
 
     protected abstract void startMonitoring(String identifier, UUID uuid, Integer major, Integer minor);
@@ -50,12 +39,6 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
         // CordovaPluginLog.d(TAG, "handle msg " + msg.what + " " + msgWhat.name());
 
         switch (msgWhat) {
-            case REGISTER_CLIENT:
-                mClients.add(msg.replyTo);
-                break;
-            case UNREGISTER_CLIENT:
-                mClients.remove(msg.replyTo);
-                break;
             case SET_FOREGROUND_SCANPERIOD: {
                 long scanPeriodMillis = msg.getData().getLong(CarmenServiceWorker.ARG_SCANPERIODMILLIS);
                 long waitTimeMillis = msg.getData().getLong(CarmenServiceWorker.ARG_WAITTIMEMILLIS);
@@ -111,7 +94,7 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
                 } catch (IllegalArgumentException e) {
                     CordovaPluginLog.e(TAG, e.getMessage(), e);
                     Message errMsg = Message.obtain(null, CarmenServiceWorker.WHAT_EVENT.ERROR.ordinal(), e.getMessage());
-                    notifyClients(errMsg);
+                    mCarmenServiceWorker.notifyClients(errMsg);
                 }
 
                 break;
@@ -122,58 +105,9 @@ public abstract class AbstractCarmenBeaconManager extends Handler {
         }
     }
 
-    protected void notifyClients(Message msg) {
-        for (int i = this.mClients.size() - 1; i >= 0; i--) {
-            try {
-                this.mClients.get(i).send(Message.obtain(msg));
-            } catch (RemoteException e) {
-                CordovaPluginLog.e(TAG, e.getMessage(), e);
-                // The client is dead. Remove it from the list;
-                // we are going through the list from back to front
-                // so this is safe to do inside the loop.
-                this.mClients.remove(i);
-            }
-        }
-    }
-
     protected void onServiceReady() {
         Log.d(TAG, CarmenServiceWorker.WHAT_EVENT.SERVICE_READY.name());
-        notifyClients(Message.obtain(null, CarmenServiceWorker.WHAT_EVENT.SERVICE_READY.ordinal()));
-    }
-
-    public void onDestroy() {
-        Log.d(TAG, "onDestroy");
-        storeRegions();
-    }
-
-    protected void restoreRegions() {
-        if (mRegionsFile.canRead()) {
-            try {
-                ObjectInputStream in = new ObjectInputStream(new FileInputStream(mRegionsFile));
-                mRegions = (HashMap<String, BeaconRegion>) in.readObject();
-                in.close();
-
-                for (BeaconRegion br : mRegions.values()) {
-                    br.setEntered(false);
-                }
-            } catch (IOException e) {
-                CordovaPluginLog.e(TAG, e.getMessage(), e);
-            } catch (ClassNotFoundException e) {
-                CordovaPluginLog.e(TAG, e.getMessage(), e);
-            }
-        } else {
-            CordovaPluginLog.w(TAG, "cannot read " + mRegionsFile.getAbsolutePath());
-        }
-    }
-
-    public void storeRegions() {
-        try {
-            ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(mRegionsFile));
-            out.writeObject(mRegions);
-            out.flush();
-            out.close();
-        } catch (IOException e) {
-            CordovaPluginLog.e(TAG, e.getMessage(), e);
-        }
+        mCarmenServiceWorker.startMonitoring();
+        mCarmenServiceWorker.notifyClients(Message.obtain(null, CarmenServiceWorker.WHAT_EVENT.SERVICE_READY.ordinal()));
     }
 }

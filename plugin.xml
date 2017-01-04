@@ -58,24 +58,25 @@
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/SetRegions.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/SetBackgroundScanPeriod.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/StopMonitoring.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/action/SetOptions.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/action/ClearRegions.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/StopRanging.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/SetForegroundScanPeriod.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/SetRegionExitExpiration.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/CarmenPlugin.java" target-dir="src/com/dff/cordova/plugin/carmen" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/service/CarmenServiceWorker.java" target-dir="src/com/dff/cordova/plugin/carmen/service" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/service/AbstractCarmenBeaconManager.java" target-dir="src/com/dff/cordova/plugin/carmen/service" />
-        <source-file src="src/android/com/dff/cordova/plugin/carmen/service/classes/BeaconRegion.java" target-dir="src/com/dff/cordova/plugin/carmen/service/classes" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/service/helpers/PreferencesHelper.java" target-dir="src/com/dff/cordova/plugin/carmen/service/helpers" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/service/CarmenService.java" target-dir="src/com/dff/cordova/plugin/carmen/service" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/service/ibeacon/estimote/EstimoteBeaconManager.java" target-dir="src/com/dff/cordova/plugin/carmen/service/ibeacon/estimote" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/service/event/CarmenEventServiceWorker.java" target-dir="src/com/dff/cordova/plugin/carmen/service/event" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/broadcasts/CarmenServiceBroadcastReceiver.java" target-dir="src/com/dff/cordova/plugin/carmen/broadcasts" />
-        <source-file src="src/android/com/dff/cordova/plugin/carmen/model/JsonRegion.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/model/JsonBeacon.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/model/BeaconRegion.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/model/JsonBatteryLevel.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
-        <source-file src="src/android/com/dff/cordova/plugin/carmen/model/JsonNearable.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/model/JsonNearableType.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/model/JsonBroadcastingPower.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
+        <source-file src="src/android/com/dff/cordova/plugin/carmen/model/Event.java" target-dir="src/com/dff/cordova/plugin/carmen/model" />
 
      </platform>
 </plugin>
-

@@ -31,6 +31,8 @@ public class CarmenPlugin extends CommonServicePlugin {
         mActions.put(SetRegionExitExpiration.ACTION_NAME, SetRegionExitExpiration.class);
         mActions.put(SetRegions.ACTION_NAME, SetRegions.class);
         mActions.put(GetRegions.ACTION_NAME, GetRegions.class);
+        mActions.put(ClearRegions.ACTION_NAME, ClearRegions.class);
+        mActions.put(SetOptions.ACTION_NAME, SetOptions.class);
     }
 
     @Override

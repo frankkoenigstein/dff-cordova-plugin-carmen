@@ -3,14 +3,12 @@ package com.dff.cordova.plugin.carmen.service.ibeacon.estimote;
 import android.content.Context;
 import android.os.Looper;
 import android.os.Message;
-import android.os.Parcelable;
-import android.os.RemoteException;
 import android.util.Log;
+import com.dff.cordova.plugin.carmen.model.BeaconRegion;
 import com.dff.cordova.plugin.carmen.service.AbstractCarmenBeaconManager;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT_EVENT;
-import com.dff.cordova.plugin.carmen.service.classes.BeaconRegion;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import com.estimote.sdk.Beacon;
 import com.estimote.sdk.BeaconManager;
@@ -24,21 +22,11 @@ import java.util.UUID;
 public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
     private static final String TAG = "EstimoteBeaconManager";
     private BeaconManager mBeaconManager;
-    public EstimoteBeaconManager(Looper looper, Context context) {
-        super(looper, context);
+
+    public EstimoteBeaconManager(Looper looper, Context context, CarmenServiceWorker carmenServiceWorker) {
+        super(looper, context, carmenServiceWorker);
 
         mBeaconManager = new BeaconManager(mContext);
-        mBeaconManager.connect(new BeaconManager.ServiceReadyCallback() {
-            @Override
-            public void onServiceReady() {
-                EstimoteBeaconManager.super.onServiceReady();
-
-                for (BeaconRegion beaconRegion : mRegions.values()) {
-                    startMonitoring(beaconRegion.mIdentifier, UUID.fromString(beaconRegion.mUuid), beaconRegion.mMajor, beaconRegion.mMinor);
-                }
-            }
-        });
-
         mBeaconManager.setErrorListener(new BeaconManager.ErrorListener() {
             @Override
             public void onError(Integer errorId) {
@@ -56,7 +44,7 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
                 }
 
                 Log.e(TAG, WHAT_EVENT.BEACON_ERROR.name() + " " + errorId + ": " + errorName);
-                notifyClients(Message.obtain(null, WHAT_EVENT.BEACON_ERROR.ordinal(), errorId, 0, errorName));
+                mCarmenServiceWorker.notifyClients(Message.obtain(null, WHAT_EVENT.BEACON_ERROR.ordinal(), errorId, 0, errorName));
             }
         });
 
@@ -64,14 +52,13 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
             @Override
             public void onScanStart() {
                 Log.d(TAG, WHAT_EVENT.SCAN_START.name());
-                notifyClients(Message.obtain(null, WHAT_EVENT.SCAN_START.ordinal()));
+                mCarmenServiceWorker.notifyClients(Message.obtain(null, WHAT_EVENT.SCAN_START.ordinal()));
             }
 
             @Override
-            public void onScanStop()
-            {
+            public void onScanStop() {
                 Log.d(TAG, WHAT_EVENT.SCAN_STOP.name());
-                notifyClients(Message.obtain(null, WHAT_EVENT.SCAN_STOP.ordinal()));
+                mCarmenServiceWorker.notifyClients(Message.obtain(null, WHAT_EVENT.SCAN_STOP.ordinal()));
             }
         });
 
@@ -80,27 +67,27 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
             public void onEnteredRegion(Region region, List<Beacon> beacons) {
                 Log.d(TAG, WHAT_EVENT.ENTERED_REGION.name() + " " + region.getIdentifier());
 
-                BeaconRegion beaconRegion = mRegions.get(region.getIdentifier());
+                BeaconRegion beaconRegion = mCarmenServiceWorker.getRegions().get(region.getIdentifier());
                 if (beaconRegion != null) {
                     beaconRegion.setEntered(true);
                 }
 
-                Message msg = Message.obtain(null, WHAT_EVENT.ENTERED_REGION.ordinal(), region);
+                Message msg = Message.obtain(null, WHAT_EVENT.ENTERED_REGION.ordinal(), mCarmenServiceWorker.getRegion(region.getIdentifier()));
                 msg.getData().putParcelableArrayList(CarmenServiceWorker.ARG_BEACONS, new ArrayList<Beacon>(beacons));
-                notifyClients(msg);
+                mCarmenServiceWorker.notifyClients(msg);
             }
 
             @Override
             public void onExitedRegion(Region region) {
                 Log.d(TAG, WHAT_EVENT.EXITED_REGION.name() + " " + region.getIdentifier());
 
-                BeaconRegion beaconRegion = mRegions.get(region.getIdentifier());
+                BeaconRegion beaconRegion = mCarmenServiceWorker.getRegions().get(region.getIdentifier());
                 if (beaconRegion != null) {
                     beaconRegion.setEntered(false);
                 }
 
-                Message msg = Message.obtain(null, WHAT_EVENT.EXITED_REGION.ordinal(), region);
-                notifyClients(msg);
+                Message msg = Message.obtain(null, WHAT_EVENT.EXITED_REGION.ordinal(), mCarmenServiceWorker.getRegion(region.getIdentifier()));
+                mCarmenServiceWorker.notifyClients(msg);
             }
         });
 
@@ -109,9 +96,21 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
             public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
                 Log.d(TAG, WHAT_EVENT.BEACONS_DISCOVERED.name() + " " + region.getIdentifier());
 
-                Message msg = Message.obtain(null, WHAT_EVENT.BEACONS_DISCOVERED.ordinal(), region);
+                Message msg = Message.obtain(null, WHAT_EVENT.BEACONS_DISCOVERED.ordinal(), mCarmenServiceWorker.getRegion(region.getIdentifier()));
                 msg.getData().putParcelableArrayList(CarmenServiceWorker.ARG_BEACONS, new ArrayList<Beacon>(beacons));
-                notifyClients(msg);
+                mCarmenServiceWorker.notifyClients(msg);
+            }
+        });
+
+        connect();
+    }
+
+    private void connect() {
+        mBeaconManager.connect(new BeaconManager.ServiceReadyCallback() {
+            @Override
+            public void onServiceReady() {
+                mBeaconServiceConnected = true;
+                EstimoteBeaconManager.super.onServiceReady();
             }
         });
     }
@@ -160,44 +159,16 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
     }
 
     @Override
-    public void handleMessage(Message msg)
-    {
+    public void handleMessage(Message msg) {
         WHAT msgWhat = WHAT.values()[msg.what];
 
         switch (msgWhat) {
             case CONNECT:
-                mBeaconManager.connect(new BeaconManager.ServiceReadyCallback() {
-                    @Override
-                    public void onServiceReady() {
-                        mBeaconServiceConnected = true;
-                        notifyClients(Message.obtain(null, WHAT_EVENT.SERVICE_READY.ordinal()));
-                    }
-                });
+                connect();
                 break;
             case DISCONNECT:
                 mBeaconManager.disconnect();
                 mBeaconServiceConnected = false;
-                break;
-            case SET_REGIONS:
-                ArrayList<Region> regions = msg.getData().getParcelableArrayList(CarmenServiceWorker.ARG_REGIONS);
-                for (Region region : regions) {
-                    mRegions.put(region.getIdentifier(), new BeaconRegion(region));
-                    mBeaconManager.startMonitoring(region);
-                }
-
-                storeRegions();
-
-                break;
-            case GET_REGIONS:
-                Message msgResult = Message.obtain(null, WHAT.RESULT.ordinal(), msg.what, 0);
-                msgResult.getData().putParcelableArrayList(CarmenServiceWorker.ARG_REGIONS, new ArrayList<Parcelable>(mRegions.values()));
-
-                try {
-                    msg.replyTo.send(msgResult);
-                } catch (RemoteException e) {
-                    CordovaPluginLog.e(TAG, e.getMessage(), e);
-                }
-
                 break;
             default:
                 super.handleMessage(msg);

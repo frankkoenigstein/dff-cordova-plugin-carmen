@@ -2,8 +2,8 @@ package com.dff.cordova.plugin.carmen;
 
 import android.content.ComponentName;
 import android.os.*;
+import com.dff.cordova.plugin.carmen.model.BeaconRegion;
 import com.dff.cordova.plugin.carmen.model.JsonBeacon;
-import com.dff.cordova.plugin.carmen.model.JsonRegion;
 import com.dff.cordova.plugin.carmen.service.CarmenService;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT;
@@ -12,7 +12,6 @@ import com.dff.cordova.plugin.common.AbstractPluginListener;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import com.dff.cordova.plugin.common.service.ServiceHandler;
 import com.estimote.sdk.Beacon;
-import com.estimote.sdk.Region;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONException;
@@ -45,8 +44,8 @@ public class CarmenServiceHandler extends ServiceHandler {
                     case ENTERED_REGION:
                         beacons = msg.getData().getParcelableArrayList(CarmenServiceWorker.ARG_BEACONS);
                     case EXITED_REGION:
-                        Region region = (Region) msg.obj;
-                        JSONObject jsonRegion = JsonRegion.toJson(region);
+                        BeaconRegion region = (BeaconRegion) msg.obj;
+                        JSONObject jsonRegion = region.toJson();
 
                         if (beacons != null) {
                             jsonRegion.put(CarmenServiceWorker.ARG_BEACONS, JsonBeacon.toJson(beacons));

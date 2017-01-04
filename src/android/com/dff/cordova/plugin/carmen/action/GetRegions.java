@@ -7,7 +7,7 @@ import android.os.RemoteException;
 import com.dff.cordova.plugin.carmen.CarmenServiceHandler;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT;
-import com.dff.cordova.plugin.carmen.service.classes.BeaconRegion;
+import com.dff.cordova.plugin.carmen.model.BeaconRegion;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;

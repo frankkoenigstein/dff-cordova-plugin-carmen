@@ -15,7 +15,9 @@ var actions = [
     'startRanging',
     'stopRanging',
     'setRegions',
-    'getRegions'
+    'getRegions',
+    'clearRegions',
+    'setOptions'
 ];
 
 var eventActions = [

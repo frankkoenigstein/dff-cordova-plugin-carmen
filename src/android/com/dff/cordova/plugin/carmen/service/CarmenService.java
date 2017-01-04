@@ -2,14 +2,15 @@ package com.dff.cordova.plugin.carmen.service;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.*;
+import android.os.HandlerThread;
+import android.os.IBinder;
+import android.os.Messenger;
 import android.os.Process;
 import android.util.Log;
-import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT;
-import com.dff.cordova.plugin.carmen.service.event.CarmenEventServiceWorker;
 
 public class CarmenService extends Service {
     private static final String TAG = "CarmenService";
+    public static final String SHARED_PREFERENCE_NAME = "carmen";
 
     private CarmenServiceWorker mCarmenServiceWorker;
     private Messenger mServiceMessenger;
@@ -23,13 +24,6 @@ public class CarmenService extends Service {
         handlerThread.start();
         mCarmenServiceWorker = new CarmenServiceWorker(handlerThread.getLooper(), getApplicationContext());
         mServiceMessenger = new Messenger(mCarmenServiceWorker);
-
-        // event service
-        CarmenEventServiceWorker carmenEventServiceWorker = new CarmenEventServiceWorker(handlerThread.getLooper(), getApplicationContext());
-        // connect handler
-        Message eventClientMsg = Message.obtain(mCarmenServiceWorker, WHAT.REGISTER_CLIENT.ordinal());
-        eventClientMsg.replyTo = new Messenger(carmenEventServiceWorker);
-        eventClientMsg.sendToTarget();
     }
 
     @Override
