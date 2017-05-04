@@ -3,6 +3,7 @@ package com.dff.cordova.plugin.carmen.service.ibeacon.estimote;
 import android.content.Context;
 import android.os.Looper;
 import android.os.Message;
+import android.os.Parcelable;
 import android.util.Log;
 import com.dff.cordova.plugin.carmen.model.BeaconRegion;
 import com.dff.cordova.plugin.carmen.service.AbstractCarmenBeaconManager;
@@ -10,10 +11,9 @@ import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT_EVENT;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
-import com.estimote.sdk.Beacon;
-import com.estimote.sdk.BeaconManager;
-import com.estimote.sdk.Region;
-import com.estimote.sdk.service.BeaconService;
+import com.estimote.coresdk.recognition.packets.Beacon;
+import com.estimote.coresdk.service.BeaconManager;
+import com.estimote.coresdk.service.BeaconService;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -62,9 +62,9 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
             }
         });
 
-        mBeaconManager.setMonitoringListener(new BeaconManager.MonitoringListener() {
+        mBeaconManager.setMonitoringListener(new BeaconManager.BeaconMonitoringListener() {
             @Override
-            public void onEnteredRegion(Region region, List<Beacon> beacons) {
+            public void onEnteredRegion(com.estimote.coresdk.observation.region.beacon.BeaconRegion region, List<Beacon> beacons) {
                 Log.d(TAG, WHAT_EVENT.ENTERED_REGION.name() + " " + region.getIdentifier());
 
                 BeaconRegion beaconRegion = mCarmenServiceWorker.getRegions().get(region.getIdentifier());
@@ -73,12 +73,12 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
                 }
 
                 Message msg = Message.obtain(null, WHAT_EVENT.ENTERED_REGION.ordinal(), mCarmenServiceWorker.getRegion(region.getIdentifier()));
-                msg.getData().putParcelableArrayList(CarmenServiceWorker.ARG_BEACONS, new ArrayList<Beacon>(beacons));
+                msg.getData().putParcelableArrayList(CarmenServiceWorker.ARG_BEACONS, new ArrayList<Parcelable>(beacons));
                 mCarmenServiceWorker.notifyClients(msg);
             }
 
             @Override
-            public void onExitedRegion(Region region) {
+            public void onExitedRegion(com.estimote.coresdk.observation.region.beacon.BeaconRegion region) {
                 Log.d(TAG, WHAT_EVENT.EXITED_REGION.name() + " " + region.getIdentifier());
 
                 BeaconRegion beaconRegion = mCarmenServiceWorker.getRegions().get(region.getIdentifier());
@@ -91,9 +91,9 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
             }
         });
 
-        mBeaconManager.setRangingListener(new BeaconManager.RangingListener() {
+        mBeaconManager.setRangingListener(new BeaconManager.BeaconRangingListener() {
             @Override
-            public void onBeaconsDiscovered(Region region, List<Beacon> beacons) {
+            public void onBeaconsDiscovered(com.estimote.coresdk.observation.region.beacon.BeaconRegion region, List<Beacon> beacons) {
                 Log.d(TAG, WHAT_EVENT.BEACONS_DISCOVERED.name() + " " + region.getIdentifier());
 
                 Message msg = Message.obtain(null, WHAT_EVENT.BEACONS_DISCOVERED.ordinal(), mCarmenServiceWorker.getRegion(region.getIdentifier()));
@@ -117,28 +117,28 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
 
     @Override
     protected void startMonitoring(String identifier, UUID uuid, Integer major, Integer minor) {
-        Region region = new Region(identifier, uuid, major, minor);
+        com.estimote.coresdk.observation.region.beacon.BeaconRegion region = new com.estimote.coresdk.observation.region.beacon.BeaconRegion(identifier, uuid, major, minor);
         CordovaPluginLog.d(TAG, "start monitoring " + region);
         mBeaconManager.startMonitoring(region);
     }
 
     @Override
     protected void stopMonitoring(String identifier, UUID uuid, Integer major, Integer minor) {
-        Region region = new Region(identifier, uuid, major, minor);
+        com.estimote.coresdk.observation.region.beacon.BeaconRegion region = new com.estimote.coresdk.observation.region.beacon.BeaconRegion(identifier, uuid, major, minor);
         CordovaPluginLog.d(TAG, "stop monitoring " + region);
-        mBeaconManager.stopMonitoring(region);
+        mBeaconManager.stopMonitoring(region.getIdentifier());
     }
 
     @Override
     protected void startRanging(String identifier, UUID uuid, Integer major, Integer minor) {
-        Region region = new Region(identifier, uuid, major, minor);
+        com.estimote.coresdk.observation.region.beacon.BeaconRegion region = new com.estimote.coresdk.observation.region.beacon.BeaconRegion(identifier, uuid, major, minor);
         CordovaPluginLog.d(TAG, "start ranging " + region);
         mBeaconManager.startRanging(region);
     }
 
     @Override
     protected void stopRanging(String identifier, UUID uuid, Integer major, Integer minor) {
-        Region region = new Region(identifier, uuid, major, minor);
+        com.estimote.coresdk.observation.region.beacon.BeaconRegion region = new com.estimote.coresdk.observation.region.beacon.BeaconRegion(identifier, uuid, major, minor);
         CordovaPluginLog.d(TAG, "stop ranging " + region);
         mBeaconManager.stopRanging(region);
     }

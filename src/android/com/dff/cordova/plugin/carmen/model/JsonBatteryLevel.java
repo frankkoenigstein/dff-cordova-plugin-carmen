@@ -1,6 +1,6 @@
 package com.dff.cordova.plugin.carmen.model;
 
-import com.estimote.sdk.Nearable;
+import com.estimote.coresdk.recognition.packets.Nearable;
 import org.json.JSONException;
 import org.json.JSONObject;
 

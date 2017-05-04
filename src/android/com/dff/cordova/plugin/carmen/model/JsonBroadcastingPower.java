@@ -1,6 +1,6 @@
 package com.dff.cordova.plugin.carmen.model;
 
-import com.estimote.sdk.cloud.model.BroadcastingPower;
+import com.estimote.coresdk.cloud.model.BroadcastingPower;
 import org.json.JSONException;
 import org.json.JSONObject;
 

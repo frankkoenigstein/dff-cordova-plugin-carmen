@@ -3,7 +3,6 @@ package com.dff.cordova.plugin.carmen.action;
 import android.os.Message;
 import android.util.Log;
 import com.dff.cordova.plugin.carmen.CarmenServiceHandler;
-import com.dff.cordova.plugin.carmen.service.AbstractCarmenBeaconManager;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import org.apache.cordova.CallbackContext;

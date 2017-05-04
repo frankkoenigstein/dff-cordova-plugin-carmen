@@ -11,7 +11,8 @@ import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT_EVENT;
 import com.dff.cordova.plugin.common.AbstractPluginListener;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import com.dff.cordova.plugin.common.service.ServiceHandler;
-import com.estimote.sdk.Beacon;
+
+import com.estimote.coresdk.recognition.packets.Beacon;
 import org.apache.cordova.CallbackContext;
 import org.apache.cordova.CordovaInterface;
 import org.json.JSONException;

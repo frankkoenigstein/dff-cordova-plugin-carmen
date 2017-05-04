@@ -4,7 +4,6 @@ import android.os.Parcel;
 import android.os.Parcelable;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
-import com.estimote.sdk.Region;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,7 +11,6 @@ import org.json.JSONObject;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class BeaconRegion implements Serializable, Parcelable {
     public static final Parcelable.Creator<BeaconRegion> CREATOR
@@ -41,7 +39,7 @@ public class BeaconRegion implements Serializable, Parcelable {
         mMinor = minor;
     }
 
-    public BeaconRegion(Region region) {
+    public BeaconRegion(com.estimote.coresdk.observation.region.beacon.BeaconRegion region) {
         mIdentifier = region.getIdentifier();
         mUuid = region.getProximityUUID().toString();
         mMajor = region.getMajor();

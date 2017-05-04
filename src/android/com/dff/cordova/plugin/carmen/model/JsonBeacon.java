@@ -1,9 +1,10 @@
 package com.dff.cordova.plugin.carmen.model;
 
-import com.dff.cordova.plugin.carmen.service.AbstractCarmenBeaconManager;
+
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
-import com.estimote.sdk.Beacon;
-import com.estimote.sdk.MacAddress;
+
+import com.estimote.coresdk.recognition.packets.Beacon;
+import com.estimote.coresdk.recognition.utils.MacAddress;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
