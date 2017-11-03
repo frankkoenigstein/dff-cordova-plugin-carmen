@@ -1,0 +1,24 @@
+{
+  "name": "dff-cordova-plugin-carmen",
+  "version": "1.0.0",
+  "description": "carmen plugin",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frankkoenigstein/dff-cordova-plugin-carmen.git"
+  },
+  "keywords": [
+    "carmen",
+    "estimote",
+    "ibeacon"
+  ],
+  "author": "frankkoenigstein",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/frankkoenigstein/dff-cordova-plugin-carmen/issues"
+  },
+  "homepage": "https://github.com/frankkoenigstein/dff-cordova-plugin-carmen#readme"
+}
