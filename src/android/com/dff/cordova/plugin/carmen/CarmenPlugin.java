@@ -1,7 +1,9 @@
 package com.dff.cordova.plugin.carmen;
 
+import android.Manifest;
 import android.util.Log;
 import com.dff.cordova.plugin.carmen.action.*;
+import com.dff.cordova.plugin.common.CommonPlugin;
 import com.dff.cordova.plugin.common.action.CordovaAction;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
 import com.dff.cordova.plugin.common.service.CommonServicePlugin;
@@ -15,6 +17,11 @@ import java.util.HashMap;
 
 public class CarmenPlugin extends CommonServicePlugin {
     private static final String TAG = "com.dff.cordova.plugin.carmen.CarmenPlugin";
+    private static final String[] PERMISSIONS =
+        {
+            Manifest.permission.ACCESS_COARSE_LOCATION,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        };
     private HashMap<String, Class<? extends CarmenAction>> mActions = new HashMap<String, Class<? extends CarmenAction>>();
     private CarmenServiceHandler mCarmenServiceHandler;
 
@@ -37,6 +44,7 @@ public class CarmenPlugin extends CommonServicePlugin {
 
     @Override
     public void pluginInitialize() {
+        requestPermission();
         mCarmenServiceHandler = new CarmenServiceHandler(this.cordova);
         super.pluginInitialize(mCarmenServiceHandler);
     }
@@ -85,5 +93,15 @@ public class CarmenPlugin extends CommonServicePlugin {
         }
 
         return super.execute(action, args, callbackContext);
+    }
+
+    /**
+     * request permissions if they are not granted by forwarding them to
+     * the common plugin
+     */
+    private void requestPermission() {
+        for (String permission : PERMISSIONS) {
+            CommonPlugin.addPermission(permission);
+        }
     }
 }
