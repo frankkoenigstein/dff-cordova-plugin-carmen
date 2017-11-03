@@ -4,7 +4,7 @@
     id="dff-cordova-plugin-carmen"
     version="0.0.1">
 
-    <name>Common</name>
+    <name>Carmen</name>
     <description>Carmen Plugin</description>
     <author>dff solutions</author>
     <keywords>phonegap,cordova,carmen,dff</keywords>
@@ -25,6 +25,8 @@
 
         <config-file target="AndroidManifest.xml" parent="/manifest">
             <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED"/>
+            <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
+            <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
         </config-file>
 
         <config-file target="AndroidManifest.xml" parent="/manifest/application">
@@ -48,6 +50,7 @@
 
         <framework src="estimote.gradle" custom="true" type="gradleReference" />
         <source-file src="libs/estimote-sdk.aar" target-dir="libs" />
+        <source-file src="libs/sdk-1.4.0.aar" target-dir="libs" />
 
         <source-file src="src/android/com/dff/cordova/plugin/carmen/CarmenServiceHandler.java" target-dir="src/com/dff/cordova/plugin/carmen" />
         <source-file src="src/android/com/dff/cordova/plugin/carmen/action/StartService.java" target-dir="src/com/dff/cordova/plugin/carmen/action" />

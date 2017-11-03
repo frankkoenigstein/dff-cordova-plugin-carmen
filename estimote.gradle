@@ -1,12 +1,12 @@
 repositories{
   jcenter()
-  flatDir{
-      dirs 'libs'
-   }
+//   flatDir{
+//       dirs 'libs'
+//    }
 }
 
 dependencies {
 //   compile(name:'estimote-sdk', ext:'aar')
-  compile(name:'sdk-1.4.0', ext:'aar')
-//   compile 'com.estimote:sdk:1.4.0'
+//   compile(name:'sdk-1.4.0', ext:'aar')
+  compile 'com.estimote:sdk:1.4.0'
 }
