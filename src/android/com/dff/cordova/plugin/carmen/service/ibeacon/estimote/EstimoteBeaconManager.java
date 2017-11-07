@@ -11,6 +11,8 @@ import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT;
 import com.dff.cordova.plugin.carmen.service.CarmenServiceWorker.WHAT_EVENT;
 import com.dff.cordova.plugin.common.log.CordovaPluginLog;
+import com.estimote.coresdk.observation.region.RegionUtils;
+import com.estimote.coresdk.observation.utils.Proximity;
 import com.estimote.coresdk.recognition.packets.Beacon;
 import com.estimote.coresdk.service.BeaconManager;
 import com.estimote.coresdk.service.BeaconService;
@@ -66,6 +68,14 @@ public class EstimoteBeaconManager extends AbstractCarmenBeaconManager {
             @Override
             public void onEnteredRegion(com.estimote.coresdk.observation.region.beacon.BeaconRegion region, List<Beacon> beacons) {
                 Log.d(TAG, WHAT_EVENT.ENTERED_REGION.name() + " " + region.getIdentifier());
+
+                for (Beacon b : beacons) {
+                    double accuracy = RegionUtils.computeAccuracy(b);
+                    Proximity proximity = RegionUtils.computeProximity(b);
+
+                    Log.d(TAG, WHAT_EVENT.ENTERED_REGION.name() + " accuracy: " + accuracy);
+                    Log.d(TAG, WHAT_EVENT.ENTERED_REGION.name() + " proximity: " + proximity.name());
+                }
 
                 BeaconRegion beaconRegion = mCarmenServiceWorker.getRegions().get(region.getIdentifier());
                 if (beaconRegion != null) {
